@@ -1061,18 +1061,13 @@ export function checkType(
     //   checkSuggestions(localStylesLibrary);
     // }
 
-    //
-    // hack: not supporting checking multiple libraries — the first library is assumed to be the OTKit library, and the
-    // only correct library
-    //
-
-    // if (matchingStyles.length === 0 && libraries && libraries.length > 0) {
-    //   for (const library of libraries) {
-    //     if (library.text && library.text.length > 0) {
-    //       checkSuggestions(library);
-    //     }
-    //   }
-    // }
+    if (matchingStyles.length === 0 && libraries && libraries.length > 0) {
+      for (const library of libraries) {
+        if (library.text && library.text.length > 0) {
+          checkSuggestions(library);
+        }
+      }
+    }
 
     let lineHeightFormatted = null;
 
