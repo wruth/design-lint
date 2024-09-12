@@ -931,14 +931,21 @@ export function checkType(
   localStylesLibrary,
   importedStyles
 ) {
-  console.log("checkType node: ", node);
-  console.log("checkType node.textStyleId: ", node.textStyleId);
-  console.log("checkType node.visible: ", node.visible);
+  // console.log("checkType node: ", node);
+  // console.log("checkType node.textStyleId: ", node.textStyleId);
+  // console.log("checkType node.visible: ", node.visible);
 
-  // hack: change to original code: even if a node has a textStyleId it may be obsolete
-  // so go ahead and process it
+  // the OTKit library in fact
+  const defaultLibrary = libraries[0];
+
+  const isTextStyleInLibrary =
+    !!node.textStyleId &&
+    !!defaultLibrary.text.find(
+      textStyle => textStyle.id === `${node.textStyleId.split(",")[0]},`
+    ); // ids in the library have a ',' appended
+
   // if (node.textStyleId === "" && node.visible === true) {
-  if (node.visible === true) {
+  if (node.visible && !isTextStyleInLibrary) {
     let textObject = {
       font: "",
       fontStyle: "",
@@ -967,7 +974,7 @@ export function checkType(
       );
     }
 
-    console.log("checkType past fontStyle === symbol check: ");
+    // console.log("checkType past fontStyle === symbol check: ");
 
     textObject.font = node.fontName.family;
     textObject.fontStyle = node.fontName.style;
@@ -991,11 +998,11 @@ export function checkType(
     let suggestedStyles = [];
 
     const checkSuggestions = library => {
-      console.log("checkSuggestions library:", library);
+      // console.log("checkSuggestions library:", library);
 
       for (const textStyle of library.text) {
         const style = textStyle.style;
-        console.log("checkSuggestions style:", style);
+        // console.log("checkSuggestions style:", style);
 
         let lineHeightCheck: string;
 
@@ -1054,13 +1061,18 @@ export function checkType(
     //   checkSuggestions(localStylesLibrary);
     // }
 
-    if (matchingStyles.length === 0 && libraries && libraries.length > 0) {
-      for (const library of libraries) {
-        if (library.text && library.text.length > 0) {
-          checkSuggestions(library);
-        }
-      }
-    }
+    //
+    // hack: not supporting checking multiple libraries — the first library is assumed to be the OTKit library, and the
+    // only correct library
+    //
+
+    // if (matchingStyles.length === 0 && libraries && libraries.length > 0) {
+    //   for (const library of libraries) {
+    //     if (library.text && library.text.length > 0) {
+    //       checkSuggestions(library);
+    //     }
+    //   }
+    // }
 
     let lineHeightFormatted = null;
 
@@ -1078,15 +1090,12 @@ export function checkType(
     let currentStyle = `${textObject.font} ${textObject.fontStyle} · ${textObject.fontSize}/${lineHeightFormatted}`;
 
     // Create error object with fixes if matching styles are found
-    // hack: if node has a textStyleId token then show custom deprected message for that
     if (matchingStyles.length > 0) {
       return errors.push(
         createErrorObject(
           node,
           "text",
-          node.textStyleId === ""
-            ? "Missing text style"
-            : "Deprecated text style",
+          "Missing text style",
           currentStyle,
           matchingStyles
         )

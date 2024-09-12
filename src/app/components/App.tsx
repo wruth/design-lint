@@ -42,7 +42,7 @@ const App = ({}) => {
   const [stylesInUse, setStylesInUse] = useState({});
   const librariesRef = React.useRef([]);
   const activePageRef = React.useRef(activePage);
-
+  console.log("library: ", libraries && libraries[0]);
   window.addEventListener("keydown", function(e) {
     if (e.key === "Escape") {
       // Close plugin when pressing Escape

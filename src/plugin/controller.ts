@@ -1613,7 +1613,7 @@ figma.ui.onmessage = msg => {
 
     checkType(node, errors, libraries, localStylesLibrary, usedRemoteStyles);
 
-    console.log("lintTextRules after checkType -> errors", errors);
+    // console.log("lintTextRules after checkType -> errors", errors);
 
     newCheckFills(
       node,
