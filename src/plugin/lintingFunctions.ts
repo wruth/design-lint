@@ -1086,7 +1086,7 @@ export function checkType(
           "text",
           node.textStyleId === ""
             ? "Missing text style"
-            : "Depreated text style",
+            : "Deprecated text style",
           currentStyle,
           matchingStyles
         )
