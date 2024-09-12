@@ -1090,7 +1090,9 @@ export function checkType(
         createErrorObject(
           node,
           "text",
-          "Missing text style",
+          node.textStyleId === ""
+            ? "Missing text style"
+            : "Deprecated text style",
           currentStyle,
           matchingStyles
         )
