@@ -936,9 +936,10 @@ export function checkType(
   // console.log("checkType node.visible: ", node.visible);
 
   // the OTKit library in fact
-  const defaultLibrary = libraries[0];
+  const defaultLibrary = libraries && libraries[0];
 
   const isTextStyleInLibrary =
+    defaultLibrary &&
     !!node.textStyleId &&
     !!defaultLibrary.text.find(
       textStyle => textStyle.id === `${node.textStyleId.split(",")[0]},`
