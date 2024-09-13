@@ -554,36 +554,37 @@ export function newCheckFills(
       let matchingFills = [];
       let suggestedFills = [];
 
-      if (importedStyles && importedStyles.fills) {
-        matchingFills = importedStyles.fills
-          .map(fillStyle => ({
-            name: fillStyle.name,
-            id: fillStyle.id,
-            key: fillStyle.id.replace(/S:|,/g, ""),
-            value: fillStyle.name,
-            source: "Remote Style",
-            paint: fillStyle.paint,
-            count: fillStyle.count
-          }))
-          .filter(fillStyle => checkMatchingFills(fillStyle.paint, nodeFills));
-      }
+      // hack: ignore imported and local styles and just check libraries
+      // if (importedStyles && importedStyles.fills) {
+      //   matchingFills = importedStyles.fills
+      //     .map(fillStyle => ({
+      //       name: fillStyle.name,
+      //       id: fillStyle.id,
+      //       key: fillStyle.id.replace(/S:|,/g, ""),
+      //       value: fillStyle.name,
+      //       source: "Remote Style",
+      //       paint: fillStyle.paint,
+      //       count: fillStyle.count
+      //     }))
+      //     .filter(fillStyle => checkMatchingFills(fillStyle.paint, nodeFills));
+      // }
 
-      if (matchingFills.length === 0) {
-        if (localStylesLibrary && localStylesLibrary.fills) {
-          matchingFills = localStylesLibrary.fills
-            .map(fillStyle => ({
-              name: fillStyle.name,
-              id: fillStyle.id,
-              key: fillStyle.id.replace(/S:|,/g, ""),
-              value: fillStyle.name,
-              source: "Local Library",
-              paint: fillStyle.paint
-            }))
-            .filter(fillStyle =>
-              checkMatchingFills(fillStyle.paint, nodeFills)
-            );
-        }
-      }
+      // if (matchingFills.length === 0) {
+      //   if (localStylesLibrary && localStylesLibrary.fills) {
+      //     matchingFills = localStylesLibrary.fills
+      //       .map(fillStyle => ({
+      //         name: fillStyle.name,
+      //         id: fillStyle.id,
+      //         key: fillStyle.id.replace(/S:|,/g, ""),
+      //         value: fillStyle.name,
+      //         source: "Local Library",
+      //         paint: fillStyle.paint
+      //       }))
+      //       .filter(fillStyle =>
+      //         checkMatchingFills(fillStyle.paint, nodeFills)
+      //       );
+      //   }
+      // }
 
       if (matchingFills.length === 0 && libraries && libraries.length > 0) {
         for (const library of libraries) {
@@ -621,11 +622,15 @@ export function newCheckFills(
       }
 
       if (matchingFills.length > 0) {
+        // console.log("newCheckFills: matchingFills > 0, node: ", node.fillStyleId);
+
         return errors.push(
           createErrorObject(
             node,
             "fill",
-            "Missing fill style",
+            node.fillStyleId === ""
+              ? "Missing fill style token"
+              : "Deprecated fill style",
             currentFill,
             matchingFills,
             null,
@@ -633,11 +638,13 @@ export function newCheckFills(
           )
         );
       } else if (suggestedFills.length > 0) {
+        // console.log("newCheckFills: suggestedFills > 0, node: ", node);
+
         return errors.push(
           createErrorObject(
             node,
             "fill",
-            "Missing fill style",
+            "Unknown fill style details",
             currentFill,
             null,
             suggestedFills,
@@ -645,8 +652,10 @@ export function newCheckFills(
           )
         );
       } else {
+        // console.log("newCheckFills: general error ", node);
+
         return errors.push(
-          createErrorObject(node, "fill", "Missing fill style", currentFill)
+          createErrorObject(node, "fill", "Unknown fill style", currentFill)
         );
       }
     } else {
